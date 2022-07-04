@@ -20,9 +20,10 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const { autoConnect } = useAutoConnect();
     const { networkConfiguration } = useNetworkConfiguration();
     const network = networkConfiguration as WalletAdapterNetwork;
-    const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-
-    console.log(network);
+    const endpoint = useMemo(() => {
+        if (network === 'mainnet-beta') return 'https://api.mainnet-beta.solana.com';
+        return clusterApiUrl(network)
+    }, [network]);
 
     const wallets = useMemo(
         () => [

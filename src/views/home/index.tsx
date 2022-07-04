@@ -1,53 +1,57 @@
 // Next, React
 import { FC, useEffect, useState } from 'react';
-import Link from 'next/link';
+import VaultImpl, { constants } from '@mercurial-finance/vault-sdk';
+import { Connection, PublicKey, SYSVAR_CLOCK_PUBKEY } from '@solana/web3.js';
+import { StaticTokenListResolutionStrategy } from "@solana/spl-token-registry";
 
 // Wallet
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { VaultInfo } from 'types';
+import VaultRow from './VaultRow';
 
-// Components
-import { RequestAirdrop } from '../../components/RequestAirdrop';
-import pkg from '../../../package.json';
-
-// Store
-import useUserSOLBalanceStore from '../../stores/useUserSOLBalanceStore';
-
+const tokenMap = new StaticTokenListResolutionStrategy().resolve();
+const URL = constants.KEEPER_URL['mainnet-beta'];
 export const HomeView: FC = ({ }) => {
   const wallet = useWallet();
   const { connection } = useConnection();
 
-  const balance = useUserSOLBalanceStore((s) => s.balance)
-  const { getUserSOLBalance } = useUserSOLBalanceStore()
+  const [availableVaults, setAvailableVaults] = useState<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }[]>([]);
 
   useEffect(() => {
-    if (wallet.publicKey) {
-      console.log(wallet.publicKey.toBase58())
-      getUserSOLBalance(wallet.publicKey, connection)
+    const init = async () => {
+      const vaultsInfoResponse = await fetch(`${URL}/vault_info`)
+      const vaultsInfo = await vaultsInfoResponse.json() as VaultInfo[];
+
+      const vaultsToInit = vaultsInfo
+        .map(async (vault) => {
+          const tokenInfo = tokenMap.find(token => token.address === vault.token_address);
+          if (!tokenInfo) return null;
+
+          return {
+            vaultInfo: vault,
+            vaultImpl: await VaultImpl.create(
+              connection,
+              {
+                baseTokenMint: new PublicKey(vault.token_address),
+                baseTokenDecimals: tokenInfo.decimals,
+              },
+              {
+                cluster: 'mainnet-beta',
+              },
+            ),
+          }
+        });
+
+      Promise.all(vaultsToInit).then((availableVaults) => setAvailableVaults(availableVaults));
     }
-  }, [wallet.publicKey, connection, getUserSOLBalance])
+
+    if (tokenMap.length === 0) return;
+    init();
+  }, [tokenMap])
 
   return (
-
-    <div className="md:hero mx-auto p-4">
-      <div className="md:hero-content flex flex-col">
-        <h1 className="text-center text-5xl md:pl-12 font-bold text-transparent bg-clip-text bg-gradient-to-tr from-[#9945FF] to-[#14F195]">
-          Scaffold Lite <span className='text-sm font-normal align-top text-slate-700'>v{pkg.version}</span>
-        </h1>
-        <h4 className="md:w-full text-center text-slate-300 my-2">
-          <p>Simply the fastest way to get started.</p>
-          Next.js, tailwind, wallet, web3.js, and more.
-        </h4>
-        <div className="max-w-md mx-auto mockup-code bg-primary p-6 my-2">
-          <pre data-prefix=">">
-            <code className="truncate">Start building on Solana  </code>
-          </pre>
-        </div>        
-          <div className="text-center">
-          <RequestAirdrop />
-          {/* {wallet.publicKey && <p>Public Key: {wallet.publicKey.toBase58()}</p>} */}
-          {wallet && <p>SOL Balance: {(balance || 0).toLocaleString()}</p>}
-        </div>
-      </div>
+    <div className='flex items-center justify-center flex-col mt-8'>
+      {availableVaults.map(vault => <VaultRow key={vault.vaultInfo.token_address} vaultImpl={vault.vaultImpl} vaultInfo={vault.vaultInfo} />)}
     </div>
   );
 };

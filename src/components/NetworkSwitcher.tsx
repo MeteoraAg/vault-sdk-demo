@@ -3,9 +3,7 @@ import dynamic from 'next/dynamic';
 import { useNetworkConfiguration } from '../contexts/NetworkConfigurationProvider';
 
 const NetworkSwitcher: FC = () => {
-  const { networkConfiguration, setNetworkConfiguration } = useNetworkConfiguration();
-
-  console.log(networkConfiguration);
+const { networkConfiguration, setNetworkConfiguration } = useNetworkConfiguration();
 
   return (
     <label className="cursor-pointer label">
