@@ -8,6 +8,8 @@
 ## Getting started
 This is the easiest way to get started with our Typescript SDK, the example demo includes all functionality and information we display on our own site.
 
+NPM: https://www.npmjs.com/package/@mercurial-finance/vault-sdk
+
 SDK: https://github.com/mercurial-finance/vault-sdk
 
 Demo: https://vault-sdk-demo.vercel.app/
