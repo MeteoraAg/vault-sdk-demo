@@ -1,7 +1,7 @@
 // Next, React
 import { FC, useEffect, useState } from 'react';
 import VaultImpl, { constants } from '@mercurial-finance/vault-sdk';
-import { Connection, PublicKey, SYSVAR_CLOCK_PUBKEY } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { StaticTokenListResolutionStrategy } from "@solana/spl-token-registry";
 
 // Wallet
@@ -12,7 +12,6 @@ import VaultRow from './VaultRow';
 const tokenMap = new StaticTokenListResolutionStrategy().resolve();
 const URL = constants.KEEPER_URL['mainnet-beta'];
 export const HomeView: FC = ({ }) => {
-  const wallet = useWallet();
   const { connection } = useConnection();
 
   const [availableVaults, setAvailableVaults] = useState<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }[]>([]);

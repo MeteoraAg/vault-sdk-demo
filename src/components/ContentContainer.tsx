@@ -19,12 +19,7 @@ export const ContentContainer: FC = props => {
           </li>
           <li>
             <Link href="/">
-              <a>Home</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/basics">
-              <a>Basics</a>
+              <a>Vault SDK Demo</a>
             </Link>
           </li>
         </ul>
