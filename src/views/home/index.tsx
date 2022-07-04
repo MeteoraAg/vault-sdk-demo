@@ -1,6 +1,5 @@
 // Next, React
 import { FC, useEffect, useState } from 'react';
-import { PublicKey } from '@solana/web3.js';
 import { StaticTokenListResolutionStrategy } from "@solana/spl-token-registry";
 import { useConnection } from '@solana/wallet-adapter-react';
 
@@ -30,10 +29,7 @@ export const HomeView: FC = ({ }) => {
             vaultInfo: vault,
             vaultImpl: await VaultImpl.create(
               connection,
-              {
-                baseTokenMint: new PublicKey(vault.token_address),
-                baseTokenDecimals: tokenInfo.decimals,
-              },
+              tokenInfo,
               {
                 cluster: 'mainnet-beta',
               },

@@ -3,6 +3,7 @@ import { StaticTokenListResolutionStrategy, TokenInfo } from '@solana/spl-token-
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { getATAAddressSync } from '@saberhq/token-utils';
 import { Connection, PublicKey } from '@solana/web3.js';
+import { BN } from 'bn.js';
 
 import VaultImpl, { constants } from '@mercurial-finance/vault-sdk';
 
@@ -65,7 +66,7 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
     const { publicKey, sendTransaction } = useWallet();
 
     // Vault State
-    const [vaultUnlockedAmount, setVaultUnlockedAmount] = useState('')
+    const [vaultUnlockedAmount, setVaultUnlockedAmount] = useState<number>(0)
     const [vaultStateAPI, setVaultStateAPI] = useState<VaultStateAPI>({
         enable: false,
         token_amount: 0,
@@ -78,7 +79,7 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
     const [uiState, setUiState] = useState<IData>(initialData);
 
     // User balances
-    const [userLPBalanceInLamports, setUserLPBalanceInLamports] = useState('');
+    const [userLPBalanceInLamports, setUserLPBalanceInLamports] = useState(0);
     const [userTokenBalanceInLamports, setUserTokenBalanceInLamports] = useState(0);
 
     // User interaction
@@ -90,7 +91,7 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
     // Process vault information
     const fetchVaultInformation = async () => {
         const unlockedAmount = await vaultImpl.getWithdrawableAmount()
-        setVaultUnlockedAmount(unlockedAmount)
+        setVaultUnlockedAmount(unlockedAmount.toNumber())
 
         const vaultsStateResponse = await fetch(`${URL}/vault_state/${tokenInfo.address}`)
         const vaultsState = await vaultsStateResponse.json() as VaultStateAPI;
@@ -101,14 +102,14 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
     }, [vaultImpl])
 
     useEffect(() => {
-        const virtualPrice = (Number(vaultUnlockedAmount) / Number(vaultImpl.lpSupply)) || 0;
+        const virtualPrice = (vaultUnlockedAmount / vaultImpl.lpSupply.toNumber()) || 0;
         // Vault reserves + all strategy allocations
         const totalAllocation = vaultStateAPI.strategies.reduce((acc, item) => acc + item.liquidity, vaultStateAPI.token_amount)
 
         setUiState({
             virtualPrice,
             tvl: vaultInfo.usd_rate * fromLamports(Number(vaultInfo.token_amount), tokenInfo.decimals),
-            userTVL: Number(fromLamports(Number(userLPBalanceInLamports), tokenInfo.decimals)) * virtualPrice,
+            userTVL:  Number(fromLamports(Number(userLPBalanceInLamports), tokenInfo.decimals)) * virtualPrice,
             userLPBalance: fromLamports(Number(userLPBalanceInLamports), tokenInfo.decimals),
             userTokenBalance: fromLamports(Number(userTokenBalanceInLamports), tokenInfo.decimals),
             strategyAllocation: vaultStateAPI.strategies
@@ -133,7 +134,7 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
 
         try {
             const userLpBalance = await vaultImpl.getUserBalance(publicKey)
-            setUserLPBalanceInLamports(userLpBalance)
+            setUserLPBalanceInLamports(userLpBalance.toNumber())
 
             const userTokenBalance = await getUserbalance(connection, new PublicKey(tokenInfo.address), publicKey);
             setUserTokenBalanceInLamports(userTokenBalance)
@@ -150,7 +151,8 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
         try {
             if (Number(depositAmount) <= 0 || loading) return;
 
-            const tx = await vaultImpl.deposit(publicKey, toLamports(Number(depositAmount), tokenInfo.decimals));
+            const amountInLamports = toLamports(Number(depositAmount), tokenInfo.decimals);
+            const tx = await vaultImpl.deposit(publicKey, new BN(amountInLamports));
             const txid = await sendTransaction(tx, connection);
 
             notify({
@@ -182,7 +184,8 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
         try {
             if (Number(withdrawAmount) <= 0 || loading) return;
 
-            const tx = await vaultImpl.withdraw(publicKey, toLamports(Number(withdrawAmount), tokenInfo.decimals));
+            const amountInLamports = toLamports(Number(withdrawAmount), tokenInfo.decimals);
+            const tx = await vaultImpl.withdraw(publicKey, new BN(amountInLamports));
             const txid = await sendTransaction(tx, connection);
 
             notify({
