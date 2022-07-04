@@ -46,7 +46,6 @@ const NotificationList = () => {
 }
 
 const Notification = ({ type, message, description, txid, onHide }) => {
-  const { connection } = useConnection();
   const { networkConfiguration } = useNetworkConfiguration();
 
   // TODO: we dont have access to the network or endpoint here.. 
@@ -66,7 +65,7 @@ const Notification = ({ type, message, description, txid, onHide }) => {
 
   return (
     <div
-      className={`max-w-sm w-full bg-bkg-1 shadow-lg rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 p-2 mx-4 mb-12 overflow-hidden`}
+      className={`max-w-sm w-full bg-black shadow-lg rounded-md mt-2 pointer-events-auto ring-1 ring-black ring-opacity-5 p-2 mx-4 mb-12 overflow-hidden`}
     >
       <div className={`p-4`}>
         <div className={`flex items-center`}>

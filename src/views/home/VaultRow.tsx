@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { StaticTokenListResolutionStrategy, TokenInfo } from '@solana/spl-token-registry';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { getAssociatedTokenAddress } from '@solana/spl-token';
+import { getATAAddressSync } from '@saberhq/token-utils';
 import { Connection, PublicKey } from '@solana/web3.js';
 
 import VaultImpl, { constants } from '@mercurial-finance/vault-sdk';
@@ -9,7 +9,6 @@ import VaultImpl, { constants } from '@mercurial-finance/vault-sdk';
 import { fromLamports, toLamports } from 'utils';
 import { notify } from 'utils/notifications';
 import { VaultInfo, VaultStateAPI } from 'types';
-import { VaultState } from '@mercurial-finance/vault-sdk/src/vault/types';
 
 interface IData {
     virtualPrice: number;
@@ -44,7 +43,7 @@ const getUserbalance = async (connection: Connection, mint: PublicKey, owner: Pu
             return accountInfo.value.lamports;
         }
 
-        const address = await getAssociatedTokenAddress(mint, owner);
+        const address = getATAAddressSync({mint, owner});
         const accountInfo = await connection.getParsedAccountInfo(address);
 
         if (!accountInfo || !accountInfo.value) {

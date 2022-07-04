@@ -49,7 +49,7 @@ export const HomeView: FC = ({ }) => {
   }, [tokenMap])
 
   return (
-    <div className='flex items-center justify-center flex-col mt-8'>
+    <div className='flex items-center justify-center flex-col my-8'>
       {availableVaults.map(vault => <VaultRow key={vault.vaultInfo.token_address} vaultImpl={vault.vaultImpl} vaultInfo={vault.vaultInfo} />)}
     </div>
   );
