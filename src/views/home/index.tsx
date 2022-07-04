@@ -1,13 +1,13 @@
 // Next, React
 import { FC, useEffect, useState } from 'react';
-import VaultImpl, { constants } from '@mercurial-finance/vault-sdk';
 import { PublicKey } from '@solana/web3.js';
 import { StaticTokenListResolutionStrategy } from "@solana/spl-token-registry";
+import { useConnection } from '@solana/wallet-adapter-react';
 
-// Wallet
-import { useWallet, useConnection } from '@solana/wallet-adapter-react';
-import { VaultInfo } from 'types';
+import VaultImpl, { constants } from '@mercurial-finance/vault-sdk';
+
 import VaultRow from './VaultRow';
+import { VaultInfo } from 'types';
 
 const tokenMap = new StaticTokenListResolutionStrategy().resolve();
 const URL = constants.KEEPER_URL['mainnet-beta'];

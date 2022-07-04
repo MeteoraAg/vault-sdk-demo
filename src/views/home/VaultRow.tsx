@@ -4,11 +4,12 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { getAssociatedTokenAddress } from '@solana/spl-token';
 import { Connection, PublicKey } from '@solana/web3.js';
 
-import VaultImpl from '@mercurial-finance/vault-sdk';
+import VaultImpl, { constants } from '@mercurial-finance/vault-sdk';
 
 import { fromLamports, toLamports } from 'utils';
 import { notify } from 'utils/notifications';
-import { VaultInfo } from 'types';
+import { VaultInfo, VaultStateAPI } from 'types';
+import { VaultState } from '@mercurial-finance/vault-sdk/src/vault/types';
 
 interface IData {
     virtualPrice: number;
@@ -16,6 +17,12 @@ interface IData {
     userTVL: number;
     userLPBalance: number;
     userTokenBalance: number;
+    strategyAllocation: {
+        name: string;
+        liquidity: number;
+        allocation: string;
+        maxAllocation: number;
+    }[]
 }
 
 const tokenMap = new StaticTokenListResolutionStrategy().resolve();
@@ -26,6 +33,7 @@ const initialData: IData = Object.freeze({
     userTVL: 0,
     userLPBalance: 0,
     userTokenBalance: 0,
+    strategyAllocation: [],
 })
 
 const SOL_MINT = new PublicKey('So11111111111111111111111111111111111111112');
@@ -49,6 +57,7 @@ const getUserbalance = async (connection: Connection, mint: PublicKey, owner: Pu
     }
 }
 
+const URL = constants.KEEPER_URL['mainnet-beta'];
 const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ vaultImpl, vaultInfo }) => {
     const token = vaultImpl.vaultState.tokenMint.toString();
     const tokenInfo: TokenInfo = tokenMap.find(item => item.address === token);
@@ -58,6 +67,13 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
 
     // Vault State
     const [vaultUnlockedAmount, setVaultUnlockedAmount] = useState('')
+    const [vaultStateAPI, setVaultStateAPI] = useState<VaultStateAPI>({
+        enable: false,
+        token_amount: 0,
+        total_amount: 0,
+        lp_supply: 0,
+        strategies: []
+    });
 
     // Vault State to display
     const [uiState, setUiState] = useState<IData>(initialData);
@@ -73,14 +89,22 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
     const [withdrawAmount, setWithdrawAmount] = useState('');
 
     // Process vault information
+    const fetchVaultInformation = async () => {
+        const unlockedAmount = await vaultImpl.getWithdrawableAmount()
+        setVaultUnlockedAmount(unlockedAmount)
+
+        const vaultsStateResponse = await fetch(`${URL}/vault_state/${tokenInfo.address}`)
+        const vaultsState = await vaultsStateResponse.json() as VaultStateAPI;
+        setVaultStateAPI(vaultsState)
+    }
     useEffect(() => {
-        vaultImpl.getWithdrawableAmount()
-            .then(unlockedAmount => setVaultUnlockedAmount(unlockedAmount))
-            .catch(console.error);
+        fetchVaultInformation()
     }, [vaultImpl])
 
     useEffect(() => {
         const virtualPrice = (Number(vaultUnlockedAmount) / Number(vaultImpl.lpSupply)) || 0;
+        // Vault reserves + all strategy allocations
+        const totalAllocation = vaultStateAPI.strategies.reduce((acc, item) => acc + item.liquidity, vaultStateAPI.token_amount)
 
         setUiState({
             virtualPrice,
@@ -88,8 +112,22 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
             userTVL: Number(fromLamports(Number(userLPBalanceInLamports), tokenInfo.decimals)) * virtualPrice,
             userLPBalance: fromLamports(Number(userLPBalanceInLamports), tokenInfo.decimals),
             userTokenBalance: fromLamports(Number(userTokenBalanceInLamports), tokenInfo.decimals),
+            strategyAllocation: vaultStateAPI.strategies
+                .map(item => ({
+                    name: item.strategy_name,
+                    liquidity: item.liquidity,
+                    allocation: ((item.liquidity / totalAllocation) * 100).toFixed(0),
+                    maxAllocation: item.max_allocation,
+                }))
+                .concat({
+                    name: 'Vault Reserves',
+                    liquidity: vaultStateAPI.token_amount,
+                    allocation: ((vaultStateAPI.token_amount / totalAllocation) * 100).toFixed(0),
+                    maxAllocation: 0,
+                })
+                .sort((a, b) => b.liquidity - a.liquidity),
         })
-    }, [vaultInfo, vaultUnlockedAmount, userLPBalanceInLamports, userTokenBalanceInLamports])
+    }, [vaultInfo, vaultUnlockedAmount, userLPBalanceInLamports, userTokenBalanceInLamports, vaultStateAPI])
 
     const fetchUserBalance = async () => {
         if (!tokenInfo || !publicKey) return;
@@ -222,52 +260,67 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
 
                     {/* Balance, deposit, withdraw */}
                     {expanded && (
-                        <div className='flex-col lg:mt-2 lg:flex lg:flex-row text-sm space-y-2 lg:space-y-0 justify-between'>
-                            <div className='space-y-2'>
-                                <div className='space-y-2'>
-                                    <p className='text-black/50'>{tokenInfo.symbol} Balance:</p>
-                                    <p className=''>{uiState.userTokenBalance}</p>
-                                </div>
-
-                                <div className='flex justify-between'>
-                                    <p className='text-black/50'>Deposit</p>
-                                    <button type='button' disabled={loading} className='text-blue-400 font-semibold' onClick={onClickMaxDeposit}>
-                                        {'Max'}
-                                    </button>
-                                </div>
-
-                                <div className='flex border rounded-lg w-full lg:w-48'>
-                                    <input className='text-md p-2 rounded-lg w-full' type='number' onChange={({ target: { value } }) => setDepositAmount(value)} value={depositAmount} />
-                                    <button type='button' disabled={loading} className='border-l p-2 w-20 text-center' onClick={deposit}>
-                                        {'Deposit'}
-                                    </button>
-                                </div>
-
-                                {tokenInfo.address === SOL_MINT.toString()
-                                    ? <p className='text-black/50'>We recommend keeping some SOL left for transaction.</p>
-                                    : null
-                                }
+                        <div>
+                            <p className='font-semibold border-b'>Strategy Allocation</p>
+                            <div className='space-y-1 p-2'>
+                                {uiState.strategyAllocation.map(item => (
+                                    <div key={item.name} className='flex justify-between border-b'>
+                                        <p className='text-black'>{item.name}</p>
+                                        <p className='text-black space-x-2'>
+                                            <span>{fromLamports(item.liquidity, tokenInfo.decimals).toLocaleString()}</span>
+                                            <span>({item.allocation}%)</span>
+                                        </p>
+                                    </div>
+                                ))}
                             </div>
 
-
-                            <div className='space-y-2'>
+                            <div className='flex-col lg:mt-2 lg:flex lg:flex-row text-sm space-y-2 lg:space-y-0 justify-between'>
                                 <div className='space-y-2'>
-                                    <p className='text-black/50'>Balance:</p>
-                                    <p className=''>{uiState.userLPBalance} LP</p>
+                                    <div className='space-y-2'>
+                                        <p className='text-black/50'>{tokenInfo.symbol} Balance:</p>
+                                        <p className=''>{uiState.userTokenBalance}</p>
+                                    </div>
+
+                                    <div className='flex justify-between'>
+                                        <p className='text-black/50'>Deposit</p>
+                                        <button type='button' disabled={loading} className='text-blue-400 font-semibold' onClick={onClickMaxDeposit}>
+                                            {'Max'}
+                                        </button>
+                                    </div>
+
+                                    <div className='flex border rounded-lg w-full lg:w-48'>
+                                        <input className='text-md p-2 rounded-lg w-full' type='number' onChange={({ target: { value } }) => setDepositAmount(value)} value={depositAmount} />
+                                        <button type='button' disabled={loading} className='border-l p-2 w-20 text-center' onClick={deposit}>
+                                            {'Deposit'}
+                                        </button>
+                                    </div>
+
+                                    {tokenInfo.address === SOL_MINT.toString()
+                                        ? <p className='text-black/50'>We recommend keeping some SOL left for transaction.</p>
+                                        : null
+                                    }
                                 </div>
 
-                                <div className='flex justify-between'>
-                                    <p className='text-black/50'>Withdraw</p>
 
-                                    <button type='button' disabled={loading} className='text-blue-400 font-semibold' onClick={onClickMaxWithdraw}>
-                                        {'Max'}
-                                    </button>
-                                </div>
-                                <div className='flex border rounded-lg w-full lg:w-48'>
-                                    <input className='text-md p-2 rounded-lg w-full' type='number' onChange={({ target: { value } }) => setWithdrawAmount(value)} value={withdrawAmount} />
-                                    <button type='button' disabled={loading} className='border-l p-2 w-20 text-center' onClick={withdraw}>
-                                        {'Withdraw'}
-                                    </button>
+                                <div className='space-y-2'>
+                                    <div className='space-y-2'>
+                                        <p className='text-black/50'>Balance:</p>
+                                        <p className=''>{uiState.userLPBalance} LP</p>
+                                    </div>
+
+                                    <div className='flex justify-between'>
+                                        <p className='text-black/50'>Withdraw</p>
+
+                                        <button type='button' disabled={loading} className='text-blue-400 font-semibold' onClick={onClickMaxWithdraw}>
+                                            {'Max'}
+                                        </button>
+                                    </div>
+                                    <div className='flex border rounded-lg w-full lg:w-48'>
+                                        <input className='text-md p-2 rounded-lg w-full' type='number' onChange={({ target: { value } }) => setWithdrawAmount(value)} value={withdrawAmount} />
+                                        <button type='button' disabled={loading} className='border-l p-2 w-20 text-center' onClick={withdraw}>
+                                            {'Withdraw'}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
