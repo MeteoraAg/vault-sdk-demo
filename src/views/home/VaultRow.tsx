@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { StaticTokenListResolutionStrategy, TokenInfo } from '@solana/spl-token-registry';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { getATAAddressSync } from '@saberhq/token-utils';
 import { Connection, PublicKey } from '@solana/web3.js';
+import { getAssociatedTokenAddress } from '@solana/spl-token';
 import { BN } from 'bn.js';
 
 import VaultImpl, { constants } from '@mercurial-finance/vault-sdk';
@@ -44,13 +44,13 @@ const getUserbalance = async (connection: Connection, mint: PublicKey, owner: Pu
             return accountInfo.value.lamports;
         }
 
-        const address = getATAAddressSync({mint, owner});
-        const accountInfo = await connection.getParsedAccountInfo(address);
+        const address = await getAssociatedTokenAddress(mint, owner);
+        const balance = await connection.getTokenAccountBalance(address)
 
-        if (!accountInfo || !accountInfo.value) {
+        if (!balance || !balance.value.amount) {
             return 0;
         }
-        return accountInfo.value.lamports;
+        return Number(balance.value.amount);
     } catch (error) {
         console.log('Error getting user balance', error)
         return 0;

@@ -1,5 +1,8 @@
 lockfileVersion: 5.3
 
+overrides:
+  '@solana/spl-token': 0.2.0
+
 specifiers:
   '@babel/core': 7.18.6
   '@babel/runtime': 7.18.6
@@ -92,7 +95,7 @@ packages:
       '@project-serum/borsh': 0.2.5_@solana+web3.js@1.47.3
       '@project-serum/serum': 0.13.65
       '@pythnetwork/client': 2.7.1_@solana+web3.js@1.47.3
-      '@solana/spl-token': 0.1.8
+      '@solana/spl-token': 0.2.0
       '@solana/web3.js': 1.47.3
       '@strata-foundation/web3-token-auth': 3.5.4
       '@switchboard-xyz/switchboard-api': 0.2.201_typescript@4.5.4
@@ -108,6 +111,7 @@ packages:
       - bufferutil
       - debug
       - encoding
+      - supports-color
       - typescript
       - utf-8-validate
     dev: false
@@ -115,12 +119,13 @@ packages:
   /@apricot-lend/solana-swaps-js/0.1.18:
     resolution: {integrity: sha512-1cxiEdtzxBDV8CEH2RFO+W7BZXJGbgwlz3pgJEb7iaQtmlzMFw4pZ5rybLwhgCr0irSUERFrLA2HKFc9krncMg==}
     dependencies:
-      '@solana/spl-token': 0.1.8
+      '@solana/spl-token': 0.2.0
       '@solana/web3.js': 1.47.3
       tiny-invariant: 1.2.0
     transitivePeerDependencies:
       - bufferutil
       - encoding
+      - supports-color
       - utf-8-validate
     dev: false
 
@@ -352,7 +357,7 @@ packages:
       '@project-serum/anchor': 0.21.0
       '@project-serum/serum': 0.13.55
       '@project-serum/sol-wallet-adapter': 0.2.6_@solana+web3.js@1.47.3
-      '@solana/spl-token': 0.1.8
+      '@solana/spl-token': 0.2.0
       '@solana/web3.js': 1.47.3
       big.js: 6.2.0
       bn.js: 5.2.1
@@ -364,6 +369,7 @@ packages:
     transitivePeerDependencies:
       - bufferutil
       - encoding
+      - supports-color
       - utf-8-validate
     dev: false
 
@@ -549,7 +555,7 @@ packages:
     resolution: {integrity: sha512-lLseUPEhSFUXYTKj6q7s2O3s2vW2ebgA11vMAlKodXGf5AFw4zUoEbTz9CoFOC9jS6xY4Qr8BmRnxP/odT4Uuw==}
     dev: false
 
-  /@mercurial-finance/optimist/0.1.4_1985f2599ea9cfa9bcc9b2cbcd2554d7:
+  /@mercurial-finance/optimist/0.1.4_a0b7297278c4548421d05bf391c4ed42:
     resolution: {integrity: sha512-m8QuyPx9j7fGd2grw0mD5WcYtBb8l7+OQI5aHdeIlxPg3QoPrbSdCHyFOuipYbvB0EY5YDbOmyeFwiTcBkBBSw==}
     engines: {node: '>=10'}
     peerDependencies:
@@ -557,7 +563,7 @@ packages:
       '@solana/web3.js': '>=1.15.0'
       bn.js: '>=5.2.0'
     dependencies:
-      '@solana/spl-token': 0.1.8
+      '@solana/spl-token': 0.2.0
       '@solana/web3.js': 1.47.3
       bn.js: 5.2.1
     dev: false
@@ -567,12 +573,12 @@ packages:
     dependencies:
       '@apricot-lend/sdk-ts': 0.17.3_typescript@4.5.4
       '@blockworks-foundation/mango-client': 3.6.6
-      '@mercurial-finance/optimist': 0.1.4_1985f2599ea9cfa9bcc9b2cbcd2554d7
+      '@mercurial-finance/optimist': 0.1.4_a0b7297278c4548421d05bf391c4ed42
       '@port.finance/port-sdk': 0.2.67_c4c070357e821160ee8013178122839e
       '@project-serum/anchor': 0.24.2
       '@quarryprotocol/quarry-sdk': 5.0.2_e726d9ac0f5dc891c60fe84e62d2decd
       '@saberhq/anchor-contrib': 1.13.31_ddf7cc9e35dfb5a502d86e952b423ca6
-      '@solana/spl-token': 0.1.8
+      '@solana/spl-token': 0.2.0
       '@solana/spl-token-registry': 0.2.1105
       '@solana/wallet-adapter-base': 0.9.7_@solana+web3.js@1.47.3
       '@solana/web3.js': 1.47.3
@@ -588,6 +594,7 @@ packages:
       - bufferutil
       - debug
       - encoding
+      - supports-color
       - typescript
       - utf-8-validate
     dev: false
@@ -597,11 +604,12 @@ packages:
     dependencies:
       '@project-serum/anchor': 0.24.2
       '@project-serum/serum': 0.13.65
-      '@solana/spl-token': 0.1.8
+      '@solana/spl-token': 0.2.0
       '@solana/web3.js': 1.47.3
     transitivePeerDependencies:
       - bufferutil
       - encoding
+      - supports-color
       - utf-8-validate
     dev: false
 
@@ -762,7 +770,7 @@ packages:
       '@saberhq/solana-contrib': 1.13.31_c4c070357e821160ee8013178122839e
       '@saberhq/token-utils': 1.13.6_cdeb12081445834a9ed2ad93496c747f
       '@solana/buffer-layout': 3.0.0
-      '@solana/spl-token': 0.1.8
+      '@solana/spl-token': 0.2.0
       '@solana/spl-token-registry': 0.2.4574
       '@solana/web3.js': 1.47.3
       big.js: 6.2.0
@@ -776,6 +784,7 @@ packages:
     transitivePeerDependencies:
       - bufferutil
       - encoding
+      - supports-color
       - utf-8-validate
     dev: false
 
@@ -917,13 +926,14 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       '@project-serum/anchor': 0.11.1
-      '@solana/spl-token': 0.1.8
+      '@solana/spl-token': 0.2.0
       '@solana/web3.js': 1.47.3
       bn.js: 5.2.1
       buffer-layout: 1.2.2
     transitivePeerDependencies:
       - bufferutil
       - encoding
+      - supports-color
       - utf-8-validate
     dev: false
 
@@ -932,13 +942,14 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       '@project-serum/anchor': 0.11.1
-      '@solana/spl-token': 0.1.8
+      '@solana/spl-token': 0.2.0
       '@solana/web3.js': 1.47.3
       bn.js: 5.2.1
       buffer-layout: 1.2.2
     transitivePeerDependencies:
       - bufferutil
       - encoding
+      - supports-color
       - utf-8-validate
     dev: false
 
@@ -1127,7 +1138,7 @@ packages:
     dependencies:
       '@saberhq/solana-contrib': 1.13.6_c4c070357e821160ee8013178122839e
       '@solana/buffer-layout': 4.0.0
-      '@solana/spl-token': 0.1.8
+      '@solana/spl-token': 0.2.0
       '@solana/web3.js': 1.47.3
       '@ubeswap/token-math': 5.1.6_bn.js@5.2.1+jsbi@4.3.0
       bn.js: 5.2.1
@@ -1137,6 +1148,7 @@ packages:
     transitivePeerDependencies:
       - bufferutil
       - encoding
+      - supports-color
       - utf-8-validate
     dev: false
 
@@ -1198,22 +1210,6 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       cross-fetch: 3.0.6
-    dev: false
-
-  /@solana/spl-token/0.1.8:
-    resolution: {integrity: sha512-LZmYCKcPQDtJgecvWOgT/cnoIQPWjdH+QVyzPcFvyDUiT0DiRjZaam4aqNUyvchLFhzgunv3d9xOoyE34ofdoQ==}
-    engines: {node: '>= 10'}
-    dependencies:
-      '@babel/runtime': 7.18.6
-      '@solana/web3.js': 1.47.3
-      bn.js: 5.2.1
-      buffer: 6.0.3
-      buffer-layout: 1.2.2
-      dotenv: 10.0.0
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - utf-8-validate
     dev: false
 
   /@solana/spl-token/0.2.0:
@@ -1515,7 +1511,7 @@ packages:
       '@project-serum/anchor': 0.24.2
       '@pythnetwork/client': 2.7.1_@solana+web3.js@1.47.3
       '@solana/buffer-layout': 4.0.0
-      '@solana/spl-token': 0.1.8
+      '@solana/spl-token': 0.2.0
       '@solana/web3.js': 1.47.3
       axios: 0.24.0
       bignumber.js: 9.0.2
@@ -1527,6 +1523,7 @@ packages:
       - bufferutil
       - debug
       - encoding
+      - supports-color
       - utf-8-validate
     dev: false
 
@@ -2089,7 +2086,7 @@ packages:
   /axios/0.24.0:
     resolution: {integrity: sha512-Q6cWsys88HoPgAaFAVUb0WpPk0O8iTeisR9IMqy9G8AbO4NlpVknrnQS03zzF9PGAWgO3cgletO3VjV/P7VztA==}
     dependencies:
-      follow-redirects: 1.15.1_debug@4.3.2
+      follow-redirects: 1.15.1
     transitivePeerDependencies:
       - debug
     dev: false
@@ -3283,7 +3280,7 @@ packages:
       '@project-serum/anchor': 0.16.2
       '@project-serum/borsh': 0.2.5_@solana+web3.js@1.47.3
       '@project-serum/serum': 0.13.65
-      '@solana/spl-token': 0.1.8
+      '@solana/spl-token': 0.2.0
       '@solana/web3.js': 1.47.3
       axios: 0.24.0
       bigint-buffer: 1.1.5
@@ -3294,6 +3291,7 @@ packages:
       - bufferutil
       - debug
       - encoding
+      - supports-color
       - utf-8-validate
     dev: false
 
