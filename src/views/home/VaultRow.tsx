@@ -166,10 +166,11 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
                 txid,
             })
         } catch (error) {
+            console.log(error)
             notify({
                 type: 'error',
                 message: `Failed to deposit`,
-                description: error,
+                description: error.message,
             })
         } finally {
             setLoading(false);
