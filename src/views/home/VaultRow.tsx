@@ -102,6 +102,16 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
     }, [vaultImpl])
 
     useEffect(() => {
+        if (!publicKey) {
+            setUiState(prev => ({ 
+                ...prev, 
+                userLPBalance: 0,
+                userTVL: 0,
+                userTokenBalance: 0,
+            }))
+            return;
+        }
+
         const virtualPrice = (vaultUnlockedAmount / vaultImpl.lpSupply.toNumber()) || 0;
         // Vault reserves + all strategy allocations
         const totalAllocation = vaultStateAPI.strategies.reduce((acc, item) => acc + item.liquidity, vaultStateAPI.token_amount)
@@ -127,10 +137,10 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
                 })
                 .sort((a, b) => b.liquidity - a.liquidity),
         })
-    }, [vaultInfo, vaultUnlockedAmount, userLPBalanceInLamports, userTokenBalanceInLamports, vaultStateAPI])
+    }, [publicKey, vaultInfo, vaultUnlockedAmount, userLPBalanceInLamports, userTokenBalanceInLamports, vaultStateAPI])
 
     const fetchUserBalance = async () => {
-        if (!tokenInfo || !publicKey) return;
+        if (!tokenInfo || !publicKey) return setUserLPBalanceInLamports(0);
 
         try {
             const userLpBalance = await vaultImpl.getUserBalance(publicKey)
@@ -146,6 +156,7 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
     useEffect(() => { fetchUserBalance() }, [tokenInfo, publicKey])
 
     const deposit = async () => {
+        if (!publicKey) return alert('Please connect your wallet')
         setLoading(true);
 
         try {
@@ -180,6 +191,7 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
     }
 
     const withdraw = async () => {
+        if (!publicKey) return alert('Please connect your wallet')
         setLoading(true);
 
         try {
