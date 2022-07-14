@@ -68,8 +68,16 @@ export const AppBar: FC = props => {
               </svg>
             </div>
 
+            <Link href="/">
+              <a className="btn btn-ghost btn-sm rounded-btn">Home</a>
+            </Link>
+
             <Link href="https://vaults.mercurial.finance">
               <a target={'_blank'} className="btn btn-ghost btn-sm rounded-btn">Visit Mercurial Finance</a>
+            </Link>
+            
+            <Link href="/affiliate">
+              <a className="btn btn-ghost btn-sm rounded-btn">Affiliate demo</a>
             </Link>
           </div>
         </div>

@@ -58,7 +58,7 @@ const getUserbalance = async (connection: Connection, mint: PublicKey, owner: Pu
 }
 
 const URL = constants.KEEPER_URL['mainnet-beta'];
-const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ vaultImpl, vaultInfo }) => {
+const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ vaultImpl, vaultInfo, children }) => {
     const token = vaultImpl.vaultState.tokenMint.toString();
     const tokenInfo: TokenInfo = tokenMap.find(item => item.address === token);
 
@@ -109,7 +109,7 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
         setUiState({
             virtualPrice,
             tvl: vaultInfo.usd_rate * fromLamports(Number(vaultInfo.token_amount), tokenInfo.decimals),
-            userTVL:  Number(fromLamports(Number(userLPBalanceInLamports), tokenInfo.decimals)) * virtualPrice,
+            userTVL: Number(fromLamports(Number(userLPBalanceInLamports), tokenInfo.decimals)) * virtualPrice,
             userLPBalance: fromLamports(Number(userLPBalanceInLamports), tokenInfo.decimals),
             userTokenBalance: fromLamports(Number(userTokenBalanceInLamports), tokenInfo.decimals),
             strategyAllocation: vaultStateAPI.strategies
@@ -255,6 +255,10 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
                             <p className='text-black/50'>Your deposit</p>
                             <p>{`${uiState.userTVL.toFixed(tokenInfo.decimals)} ${tokenInfo.symbol}`}</p>
                         </div>
+                    </div>
+
+                    <div className='mt-2'>
+                        {children}
                     </div>
 
                     <button type='button' className='mt-4 flex w-full justify-center' onClick={() => setExpanded(!expanded)}>
