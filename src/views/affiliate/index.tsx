@@ -35,7 +35,7 @@ export const AffiliateView: FC = ({ }) => {
                             connection,
                             SOL_TOKEN_INFO,
                             {
-                                affiliateId: new PublicKey('7236FoaWTXJyzbfFPZcrzg3tBpPhGiTgXsGWvjwrYfiF')
+                                affiliateId: new PublicKey('7236FoaWTXJyzbfFPZcrzg3tBpPhGiTgXsGWvjwrYfiF') // Replace with your own Partner ID
                             },
                         ),
                     }
