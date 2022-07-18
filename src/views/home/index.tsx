@@ -3,13 +3,13 @@ import { FC, useEffect, useState } from 'react';
 import { StaticTokenListResolutionStrategy } from "@solana/spl-token-registry";
 import { useConnection } from '@solana/wallet-adapter-react';
 
-import VaultImpl, { constants } from '@mercurial-finance/vault-sdk';
+import VaultImpl, { KEEPER_URL } from '@mercurial-finance/vault-sdk';
 
 import VaultRow from './VaultRow';
 import { VaultInfo } from 'types';
 
 const tokenMap = new StaticTokenListResolutionStrategy().resolve();
-const URL = constants.KEEPER_URL['mainnet-beta'];
+const URL = KEEPER_URL['mainnet-beta'];
 export const HomeView: FC = ({ }) => {
   const { connection } = useConnection();
 

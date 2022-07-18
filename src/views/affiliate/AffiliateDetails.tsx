@@ -17,7 +17,7 @@ const AffiliateDetails: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }>
         <div className='break-words'>
             <p>Partner Token: {info ? info.partnerToken.toString() : ''}</p>
             <p>Vault: {info ? info.vault.toString() : ''}</p>
-            <p>Total Fee: {info ? info.totalFee.toString() : ''}</p>
+            <p>Outstanding Fee: {info ? info.outstandingFee.toString() : ''}</p>
             <p>Fee Ratio: {info ? info.feeRatio.toString() : ''}</p>
             <p>Cumulative Fee: {info ? info.cummulativeFee.toString() : ''}</p>
         </div>

@@ -4,7 +4,7 @@ specifiers:
   '@babel/core': 7.18.6
   '@babel/runtime': 7.18.6
   '@heroicons/react': ^1.0.6
-  '@mercurial-finance/vault-sdk': 0.2.22
+  '@mercurial-finance/vault-sdk': 0.2.23
   '@project-serum/anchor': 0.24.0
   '@saberhq/anchor-contrib': 1.13.31
   '@saberhq/solana-contrib': 1.13.6
@@ -40,7 +40,7 @@ dependencies:
   '@babel/core': 7.18.6
   '@babel/runtime': 7.18.6
   '@heroicons/react': 1.0.6_react@17.0.2
-  '@mercurial-finance/vault-sdk': 0.2.22_vjzpzu4kdya4aregeesw4go3e4
+  '@mercurial-finance/vault-sdk': 0.2.23_vjzpzu4kdya4aregeesw4go3e4
   '@project-serum/anchor': 0.24.0
   '@saberhq/anchor-contrib': 1.13.31_to675dy4wwmegbj6zvyalbh3cu
   '@saberhq/solana-contrib': 1.13.6_ytahanl6qiiwb3uacmlyciudty
@@ -524,8 +524,8 @@ packages:
       bn.js: 5.2.1
     dev: false
 
-  /@mercurial-finance/vault-sdk/0.2.22_vjzpzu4kdya4aregeesw4go3e4:
-    resolution: {integrity: sha512-8PODoJglj3n4fpGsQtpKnidwyBgT1oSQCZ1lAud4dkWn6YOAzpqD2N3uZ7Jp3l93yMulGufD2pq+Kn9lbtrkyA==}
+  /@mercurial-finance/vault-sdk/0.2.23_vjzpzu4kdya4aregeesw4go3e4:
+    resolution: {integrity: sha512-RS52MfYJdQmge4cIRNtn3Eh+/u76QVoZsCWy0dxzN8JeoKdA54a6qcr5QSsXaGbGACxgkwUwXRcOSdPswSUlOw==}
     dependencies:
       '@apricot-lend/sdk-ts': 0.17.3_typescript@4.5.4
       '@blockworks-foundation/mango-client': 3.6.6

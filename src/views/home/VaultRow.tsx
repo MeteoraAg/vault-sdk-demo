@@ -5,7 +5,7 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { BN } from 'bn.js';
 
-import VaultImpl, { constants } from '@mercurial-finance/vault-sdk';
+import VaultImpl, { KEEPER_URL } from '@mercurial-finance/vault-sdk';
 
 import { fromLamports, toLamports } from 'utils';
 import { notify } from 'utils/notifications';
@@ -57,7 +57,7 @@ const getUserbalance = async (connection: Connection, mint: PublicKey, owner: Pu
     }
 }
 
-const URL = constants.KEEPER_URL['mainnet-beta'];
+const URL = KEEPER_URL['mainnet-beta'];
 const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ vaultImpl, vaultInfo, children }) => {
     const token = vaultImpl.vaultState.tokenMint.toString();
     const tokenInfo: TokenInfo = tokenMap.find(item => item.address === token);
@@ -102,16 +102,6 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
     }, [vaultImpl])
 
     useEffect(() => {
-        if (!publicKey) {
-            setUiState(prev => ({ 
-                ...prev, 
-                userLPBalance: 0,
-                userTVL: 0,
-                userTokenBalance: 0,
-            }))
-            return;
-        }
-
         const virtualPrice = (vaultUnlockedAmount / vaultImpl.lpSupply.toNumber()) || 0;
         // Vault reserves + all strategy allocations
         const totalAllocation = vaultStateAPI.strategies.reduce((acc, item) => acc + item.liquidity, vaultStateAPI.token_amount)
@@ -137,6 +127,15 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
                 })
                 .sort((a, b) => b.liquidity - a.liquidity),
         })
+
+        if (!publicKey) {
+            setUiState(prev => ({
+                ...prev,
+                userLPBalance: 0,
+                userTVL: 0,
+                userTokenBalance: 0,
+            }))
+        }
     }, [publicKey, vaultInfo, vaultUnlockedAmount, userLPBalanceInLamports, userTokenBalanceInLamports, vaultStateAPI])
 
     const fetchUserBalance = async () => {

@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import VaultImpl, { constants } from "@mercurial-finance/vault-sdk";
+import VaultImpl, { KEEPER_URL } from "@mercurial-finance/vault-sdk";
 import { StaticTokenListResolutionStrategy, TokenInfo } from "@solana/spl-token-registry";
 import { useConnection } from "@solana/wallet-adapter-react";
 
@@ -9,7 +9,7 @@ import { PublicKey } from "@solana/web3.js";
 import AffiliateInfo from "./AffiliateDetails";
 
 const tokenMap = new StaticTokenListResolutionStrategy().resolve();
-const URL = constants.KEEPER_URL['mainnet-beta'];
+const URL = KEEPER_URL['mainnet-beta'];
 const SOL_TOKEN_INFO = tokenMap.find((token) => token.symbol === 'SOL') as TokenInfo;
 
 export const AffiliateView: FC = ({ }) => {
