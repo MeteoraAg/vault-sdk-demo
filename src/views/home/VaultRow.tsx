@@ -10,6 +10,7 @@ import VaultImpl, { KEEPER_URL } from '@mercurial-finance/vault-sdk';
 import { fromLamports, toLamports } from 'utils';
 import { notify } from 'utils/notifications';
 import { VaultInfo, VaultStateAPI } from 'types';
+import { useNetworkConfiguration } from 'contexts/NetworkConfigurationProvider';
 
 interface IData {
     virtualPrice: number;
@@ -57,13 +58,14 @@ const getUserbalance = async (connection: Connection, mint: PublicKey, owner: Pu
     }
 }
 
-const URL = KEEPER_URL['mainnet-beta'];
 const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ vaultImpl, vaultInfo, children }) => {
     const token = vaultImpl.vaultState.tokenMint.toString();
     const tokenInfo: TokenInfo = tokenMap.find(item => item.address === token);
 
     const { connection } = useConnection();
-    const { publicKey, sendTransaction } = useWallet();
+    const { networkConfiguration } = useNetworkConfiguration();
+    const URL = KEEPER_URL[networkConfiguration];
+    const { publicKey, signTransaction } = useWallet();
 
     // Vault State
     const [vaultUnlockedAmount, setVaultUnlockedAmount] = useState<number>(0)
@@ -136,7 +138,7 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
                 userTokenBalance: 0,
             }))
         }
-    }, [publicKey, vaultInfo, vaultUnlockedAmount, userLPBalanceInLamports, userTokenBalanceInLamports, vaultStateAPI])
+    }, [publicKey, vaultImpl, vaultInfo, vaultUnlockedAmount, userLPBalanceInLamports, userTokenBalanceInLamports, vaultStateAPI])
 
     const fetchUserBalance = async () => {
         if (!tokenInfo || !publicKey) return setUserLPBalanceInLamports(0);
@@ -152,7 +154,7 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
         }
     };
     // Fetch LP balance
-    useEffect(() => { fetchUserBalance() }, [tokenInfo, publicKey])
+    useEffect(() => { fetchUserBalance() }, [tokenInfo, vaultImpl, publicKey])
 
     const deposit = async () => {
         if (!publicKey) return alert('Please connect your wallet')
@@ -163,7 +165,8 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
 
             const amountInLamports = toLamports(Number(depositAmount), tokenInfo.decimals);
             const tx = await vaultImpl.deposit(publicKey, new BN(amountInLamports));
-            const txid = await sendTransaction(tx, connection);
+            const signedTx = await signTransaction(tx);
+            const txid = await connection.sendRawTransaction(signedTx.serialize());
 
             notify({
                 message: `Submitting transaction...`,
@@ -198,7 +201,8 @@ const VaultRow: React.FC<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }> = ({ va
 
             const amountInLamports = toLamports(Number(withdrawAmount), tokenInfo.decimals);
             const tx = await vaultImpl.withdraw(publicKey, new BN(amountInLamports));
-            const txid = await sendTransaction(tx, connection);
+            const signedTx = await signTransaction(tx);
+            const txid = await connection.sendRawTransaction(signedTx.serialize());
 
             notify({
                 message: `Submitting transaction...`,

@@ -7,11 +7,14 @@ import VaultImpl, { KEEPER_URL } from '@mercurial-finance/vault-sdk';
 
 import VaultRow from './VaultRow';
 import { VaultInfo } from 'types';
+import { useNetworkConfiguration } from 'contexts/NetworkConfigurationProvider';
+import { Cluster } from '@solana/web3.js';
 
 const tokenMap = new StaticTokenListResolutionStrategy().resolve();
-const URL = KEEPER_URL['mainnet-beta'];
 export const HomeView: FC = ({ }) => {
   const { connection } = useConnection();
+  const { networkConfiguration } = useNetworkConfiguration();
+  const URL = KEEPER_URL[networkConfiguration];
 
   const [availableVaults, setAvailableVaults] = useState<{ vaultImpl: VaultImpl, vaultInfo: VaultInfo }[]>([]);
 
@@ -31,18 +34,18 @@ export const HomeView: FC = ({ }) => {
               connection,
               tokenInfo,
               {
-                cluster: 'mainnet-beta',
+                cluster: networkConfiguration as Cluster,
               },
             ),
           }
         });
 
-      Promise.all(vaultsToInit).then((availableVaults) => setAvailableVaults(availableVaults));
+      Promise.all(vaultsToInit).then((availableVaults) => setAvailableVaults(availableVaults.filter(Boolean)));
     }
 
     if (tokenMap.length === 0) return;
     init();
-  }, [tokenMap])
+  }, [tokenMap, connection, networkConfiguration])
 
   return (
     <div className='flex items-center justify-center flex-col my-8'>
