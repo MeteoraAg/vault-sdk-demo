@@ -24,7 +24,7 @@
     "@solana/wallet-adapter-base": "^0.9.7",
     "@solana/wallet-adapter-react": "^0.15.6",
     "@solana/wallet-adapter-react-ui": "^0.9.8",
-    "@solana/wallet-adapter-wallets": "^0.15.5",
+    "@solana/wallet-adapter-wallets": "^0.17.0",
     "@solana/web3.js": "^1.47.3",
     "@tailwindcss/typography": "^0.5.2",
     "bn.js": "5.2.1",
