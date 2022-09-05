@@ -1,5 +1,4 @@
-import VaultImpl from '@mercurial-finance/vault-sdk'
-import { AffiliateInfo } from '@mercurial-finance/vault-sdk/src/vault/types';
+import VaultImpl, { AffiliateInfo } from '@mercurial-finance/vault-sdk'
 import React, { useEffect, useState } from 'react'
 import { VaultInfo } from 'types'
 
