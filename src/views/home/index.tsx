@@ -1,6 +1,5 @@
 // Next, React
 import { FC, useEffect, useState } from 'react';
-import { StaticTokenListResolutionStrategy } from "@solana/spl-token-registry";
 import { useConnection } from '@solana/wallet-adapter-react';
 
 import VaultImpl, { KEEPER_URL } from '@mercurial-finance/vault-sdk';
@@ -9,8 +8,8 @@ import VaultRow from './VaultRow';
 import { VaultInfo } from 'types';
 import { useNetworkConfiguration } from 'contexts/NetworkConfigurationProvider';
 import { Cluster } from '@solana/web3.js';
+import { tokenMap } from '../../constants';
 
-const tokenMap = new StaticTokenListResolutionStrategy().resolve();
 export const HomeView: FC = ({ }) => {
   const { connection } = useConnection();
   const { networkConfiguration } = useNetworkConfiguration();

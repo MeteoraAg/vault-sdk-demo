@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { StaticTokenListResolutionStrategy, TokenInfo } from '@solana/spl-token-registry';
+import { TokenInfo } from '@solana/spl-token-registry';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
@@ -11,6 +11,7 @@ import { fromLamports, toLamports } from 'utils';
 import { notify } from 'utils/notifications';
 import { VaultInfo, VaultStateAPI } from 'types';
 import { useNetworkConfiguration } from 'contexts/NetworkConfigurationProvider';
+import { tokenMap } from '../../constants';
 
 interface IData {
     virtualPrice: number;
@@ -25,8 +26,6 @@ interface IData {
         maxAllocation: number;
     }[]
 }
-
-const tokenMap = new StaticTokenListResolutionStrategy().resolve();
 
 const initialData: IData = Object.freeze({
     virtualPrice: 0,
