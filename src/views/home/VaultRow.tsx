@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { TokenInfo } from '@solana/spl-token-registry';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Connection, PublicKey } from '@solana/web3.js';
-import { ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { Connection, PublicKey, SystemProgram } from '@solana/web3.js';
+import { AccountLayout, ASSOCIATED_TOKEN_PROGRAM_ID, Token, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { BN } from 'bn.js';
 
 import VaultImpl, { KEEPER_URL } from '@mercurial-finance/vault-sdk';
@@ -40,17 +40,22 @@ const SOL_MINT = new PublicKey('So11111111111111111111111111111111111111112');
 const getUserbalance = async (connection: Connection, mint: PublicKey, owner: PublicKey) => {
     try {
         if (mint.equals(SOL_MINT)) {
-            const accountInfo = await connection.getParsedAccountInfo(owner);
-            return accountInfo.value.lamports;
+            const accountInfo = await connection.getAccountInfo(owner);
+            if(!accountInfo) {
+              return 0;
+            }
+            return accountInfo.lamports;
         }
 
         const address = await Token.getAssociatedTokenAddress(ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, mint, owner);
-        const balance = await connection.getTokenAccountBalance(address)
-
-        if (!balance || !balance.value.amount) {
+        const balanceInfo = await connection.getAccountInfo(address);
+        if(!balanceInfo || balanceInfo.owner.equals(SystemProgram.programId)) {
             return 0;
         }
-        return Number(balance.value.amount);
+        const account = AccountLayout.decode(balanceInfo.data);
+        const balance = new BN(account.amount, "le")
+
+        return balance.toNumber();
     } catch (error) {
         console.log('Error getting user balance', error)
         return 0;
