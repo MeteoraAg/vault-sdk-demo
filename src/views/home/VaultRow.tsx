@@ -41,7 +41,10 @@ const getUserbalance = async (connection: Connection, mint: PublicKey, owner: Pu
     try {
         if (mint.equals(SOL_MINT)) {
             const accountInfo = await connection.getAccountInfo(owner);
-            return accountInfo?.lamports;
+            if(!accountInfo) {
+              return 0;
+            }
+            return accountInfo.lamports;
         }
 
         const address = await Token.getAssociatedTokenAddress(ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, mint, owner);
